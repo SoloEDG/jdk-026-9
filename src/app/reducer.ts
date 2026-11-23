@@ -35,7 +35,12 @@ export function transition(
     next = { ...current, checks: current.checks + 1 };
   if (action.type === "tick" && !current.solved)
     next = { ...current, seconds: current.seconds + 1 };
-  if (action.type === "reset") next = newSession(puzzle);
+  if (action.type === "reset")
+    next = { ...newSession(puzzle), sound: current.sound };
+  if (action.type === "sound-save")
+    next = { ...current, sound: action.score, updatedAt: Date.now() };
+  if (action.type === "sound-clear")
+    next = { ...current, sound: null, updatedAt: Date.now() };
   if (next === current) return document;
   next = { ...next, solved: isSolved(puzzle, next) };
   const withRecord = registerSolve(document, puzzle, next);

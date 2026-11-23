@@ -1,5 +1,20 @@
 export type Mark = "unknown" | "filled" | "cross";
 export type Tool = "filled" | "cross" | "unknown";
+export type ScaleId = "pentatonic" | "major" | "minor" | "lydian";
+export type VoiceId = "bell" | "pluck" | "pad";
+export interface Arrangement {
+  scale: ScaleId;
+  tempo: number;
+  voice: VoiceId;
+  baseOctave: number;
+  bars: number;
+}
+export interface SoundScore {
+  version: 1;
+  arrangement: Arrangement;
+  pattern: number[];
+  updatedAt: number;
+}
 export interface Puzzle {
   id: string;
   title: string;
@@ -23,6 +38,7 @@ export interface Session {
   seconds: number;
   solved: boolean;
   updatedAt: number;
+  sound: SoundScore | null;
 }
 export interface SolveRecord {
   id: string;
@@ -45,4 +61,6 @@ export type GameAction =
   | { type: "hint"; index: number; mark: Mark }
   | { type: "check" }
   | { type: "tick" }
-  | { type: "reset" };
+  | { type: "reset" }
+  | { type: "sound-save"; score: SoundScore }
+  | { type: "sound-clear" };

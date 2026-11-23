@@ -1,5 +1,6 @@
 import type { GameDocument, Mark, Puzzle } from "../../../shared/types";
 import { newDocument, newSession, isSolved } from "../../../shared/document";
+import { parseScore } from "../../sound";
 const KEY = "gejian.document.v1";
 export function loadDocument(puzzles: Puzzle[]): {
   document: GameDocument;
@@ -28,6 +29,7 @@ export function loadDocument(puzzles: Puzzle[]): {
           hints: Math.min(3, Math.max(0, Number(saved.hints) || 0)),
           checks: Math.max(0, Number(saved.checks) || 0),
           seconds: Math.max(0, Number(saved.seconds) || 0),
+          sound: parseScore((saved as { sound?: unknown }).sound, puzzle.size),
           updatedAt: Date.now(),
         };
         sessions[puzzle.id] = { ...session, solved: isSolved(puzzle, session) };

@@ -12,6 +12,7 @@ import { BoardPanel } from "../features/board";
 import { AssistPanel } from "../features/assist";
 import { JournalPanel } from "../features/journal";
 import { GalleryPanel } from "../features/gallery";
+import { SoundCanvasPanel, useSoundCanvas } from "../features/sound";
 import { useGame } from "./useGame";
 export function App() {
   const game = useGame();
@@ -22,6 +23,13 @@ export function App() {
     game.clearMessage();
     setPage("play");
   };
+  const sound = useSoundCanvas(
+    game.puzzle,
+    game.session.marks,
+    game.session.sound,
+    (score) => game.dispatch({ type: "sound-save", score }),
+    () => game.dispatch({ type: "sound-clear" }),
+  );
   return (
     <div className="app-shell">
       <nav className="rail">
@@ -82,6 +90,7 @@ export function App() {
                 <BoardPanel
                   puzzle={game.puzzle}
                   session={game.session}
+                  playhead={sound.playhead}
                   onMark={(index, mark) =>
                     game.dispatch({ type: "mark", index, mark })
                   }
@@ -96,6 +105,7 @@ export function App() {
                   onCheck={game.check}
                 />
               </div>
+              <SoundCanvasPanel puzzle={game.puzzle} sound={sound} />
               <div className="bottom-row">
                 <JournalPanel
                   document={game.document}

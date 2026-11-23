@@ -3,18 +3,21 @@ import { Clock3, CheckCircle2, MousePointer2 } from "lucide-react";
 import { clueSet } from "../../../shared/clues";
 import type { Puzzle, Session, Tool } from "../../../shared/types";
 import { completion } from "../../../shared/document";
+import type { Playhead } from "../../sound";
 import { lineStatuses } from "../lib/lineStatus";
 import { BoardToolbar } from "./BoardToolbar";
 import { Clue } from "./Clue";
 export function BoardPanel({
   puzzle,
   session,
+  playhead,
   onMark,
   onUndo,
   onReset,
 }: {
   puzzle: Puzzle;
   session: Session;
+  playhead: Playhead | null;
   onMark: (i: number, t: Tool) => void;
   onUndo: () => void;
   onReset: () => void;
@@ -70,6 +73,7 @@ export function BoardPanel({
               values={v}
               done={statuses[puzzle.size + i]}
               vertical
+              active={playhead?.step === i}
             />
           ))}
           {Array.from({ length: puzzle.size }, (_, row) => (
@@ -78,11 +82,12 @@ export function BoardPanel({
               {Array.from({ length: puzzle.size }, (_, col) => {
                 const i = row * puzzle.size + col;
                 const mark = session.marks[i];
+                const sounding = playhead?.step === col;
                 return (
                   <button
                     key={col}
                     aria-label={`第${row + 1}行第${col + 1}列 ${mark === "filled" ? "已填" : mark === "cross" ? "标空" : "未知"}`}
-                    className={`cell ${mark} ${(col + 1) % 5 === 0 ? "major-right" : ""} ${(row + 1) % 5 === 0 ? "major-bottom" : ""}`}
+                    className={`cell ${mark} ${sounding ? "playhead" : ""} ${(col + 1) % 5 === 0 ? "major-right" : ""} ${(row + 1) % 5 === 0 ? "major-bottom" : ""}`}
                     disabled={session.solved}
                     onClick={() =>
                       onMark(i, session.marks[i] === tool ? "unknown" : tool)

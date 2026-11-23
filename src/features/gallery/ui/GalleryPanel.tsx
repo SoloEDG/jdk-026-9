@@ -2,6 +2,7 @@ import { Download, LockKeyhole, Flower2 } from "lucide-react";
 import type { GameDocument, Puzzle } from "../../../shared/types";
 import { unlockedArt } from "../lib/artwork";
 import { downloadArtwork } from "../model/exportArt";
+import { GallerySound, useGalleryPlayback } from "../../sound";
 import { Artwork } from "./Artwork";
 export function GalleryPanel({
   document,
@@ -13,16 +14,18 @@ export function GalleryPanel({
   onOpen: (id: string) => void;
 }) {
   const arts = unlockedArt(puzzles, document);
+  const playback = useGalleryPlayback();
   return (
     <section className="gallery panel">
       <span className="eyebrow">LITTLE THINGS, COLLECTED</span>
       <h1>把发现，收藏起来。</h1>
       <p className="muted">
-        解开图案，遇见它真正的模样。你的每一份专注都在这里。
+        解开图案，遇见它真正的模样。保存过声音的作品可以在这里回听、导出。
       </p>
       <div className="gallery-grid">
         {puzzles.map((p) => {
           const unlocked = arts.includes(p);
+          const score = document.sessions[p.id]?.sound ?? null;
           return (
             <article
               className={`art-card ${unlocked ? "unlocked" : ""}`}
@@ -54,6 +57,17 @@ export function GalleryPanel({
                   <button onClick={() => onOpen(p.id)}>去解谜</button>
                 )}
               </div>
+              {unlocked && score ? (
+                <GallerySound
+                  puzzle={p}
+                  score={score}
+                  playback={playback}
+                />
+              ) : unlocked ? (
+                <p className="gallery-sound-empty">
+                  还没有保存声音作品 · 回到解谜页编排并保存
+                </p>
+              ) : null}
             </article>
           );
         })}
